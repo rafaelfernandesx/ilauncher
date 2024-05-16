@@ -1,9 +1,20 @@
+import 'dart:async';
+
 import 'package:device_apps/device_apps.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rlauncher/src/core/services/app_service.dart';
+import 'package:rlauncher/src/core/services/persist_service.dart';
+import 'package:rlauncher/src/core/settings/settings.dart';
 
-void main() {
+import 'src/home/home_routes.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Persist.init();
+  await AppService.init();
   runApp(const MyApp());
 }
 
@@ -12,13 +23,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return CupertinoApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      theme: const CupertinoThemeData(
+        barBackgroundColor: Colors.blue,
+        applyThemeToAll: true,
+        brightness: Brightness.light,
+        primaryColor: Colors.grey,
+        scaffoldBackgroundColor: CupertinoColors.white,
+        primaryContrastingColor: Colors.teal,
+        textTheme: CupertinoTextThemeData(
+          textStyle: TextStyle(color: Colors.black),
+        ),
       ),
+      initialRoute: '/home',
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: {
+        ...homeRoutes,
+      },
     );
   }
 }
@@ -66,12 +88,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         extendBody: true,
         backgroundColor: Colors.white,
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/images/bg/bg2.jpg"),
+              image: AssetImage(Settings.getWallpaperPath),
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(20),
               bottomRight: Radius.circular(20),
             ),
