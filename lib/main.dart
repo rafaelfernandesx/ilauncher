@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       valueListenable: Settings.getBrightness,
       builder: (_, state, __) {
         return CupertinoApp(
-          title: 'Flutter Demo',
+          title: 'iOS Launcher',
           debugShowCheckedModeBanner: false,
           theme: CupertinoThemeData(
             barBackgroundColor: CupertinoTheme.of(context).barBackgroundColor,
