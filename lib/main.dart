@@ -16,6 +16,7 @@ void main() async {
   await Persist.init();
   await AppService.init();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   runApp(const MyApp());
 }
 

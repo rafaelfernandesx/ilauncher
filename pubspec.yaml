@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   device_apps: ^2.2.0
   shared_preferences: ^2.2.3
+  wallpaper_handler: ^0.0.2
 
 dev_dependencies:
   flutter_test:
