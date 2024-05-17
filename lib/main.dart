@@ -1,21 +1,19 @@
-import 'dart:async';
-
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rlauncher/src/core/services/app_service.dart';
-import 'package:rlauncher/src/core/services/persist_service.dart';
-import 'package:rlauncher/src/core/settings/settings.dart';
 
+import 'src/core/services/app_service.dart';
+import 'src/core/services/navigation_service.dart';
+import 'src/core/services/persist_service.dart';
+import 'src/core/settings/settings.dart';
 import 'src/home/home_routes.dart';
+import 'src/home/pages/home_page.dart';
+import 'src/settings/settings_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Persist.init();
   await AppService.init();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(const MyApp());
 }
@@ -25,29 +23,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: const CupertinoThemeData(
-        barBackgroundColor: Colors.blue,
-        applyThemeToAll: true,
-        brightness: Brightness.light,
-        primaryColor: Colors.grey,
-        scaffoldBackgroundColor: Colors.transparent,
-        primaryContrastingColor: Colors.teal,
-        textTheme: CupertinoTextThemeData(
-          textStyle: TextStyle(color: Colors.black),
-        ),
-      ),
-      initialRoute: '/home',
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      routes: {
-        ...homeRoutes,
+    return ValueListenableBuilder(
+      valueListenable: Settings.getBrightness,
+      builder: (_, state, __) {
+        return CupertinoApp(
+          title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
+          theme: CupertinoThemeData(
+            barBackgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+            applyThemeToAll: true,
+            brightness: Settings.getBrightness.value,
+            primaryColor: CupertinoTheme.of(context).primaryColor,
+            scaffoldBackgroundColor: CupertinoTheme.of(context).scaffoldBackgroundColor,
+            primaryContrastingColor: CupertinoTheme.of(context).primaryContrastingColor,
+            // textTheme: const CupertinoTextThemeData(
+            //   textStyle: TextStyle(color: Colors.black),
+            // ),
+          ),
+          initialRoute: '/home',
+          navigatorKey: NavigationService().navigatorKey,
+          home: const HomePage(),
+          routes: {
+            ...homeRoutes,
+            ...settingsRoutes,
+          },
+        );
       },
     );
   }
 }
-
+/*
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -62,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late final TabController _tabController = TabController(length: 4, vsync: this);
 
   Future<List<ApplicationWithIcon>> _getAppList() async {
-    List<dynamic> apps = await DeviceApps.getInstalledApplications(
+    final List<dynamic> apps = await DeviceApps.getInstalledApplications(
       onlyAppsWithLaunchIntent: true,
       includeSystemApps: true,
       includeAppIcons: true,
@@ -125,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         previousValue.add([element]);
                         return previousValue;
                       }
-                      for (var item in previousValue) {
+                      for (final item in previousValue) {
                         if (item.length < 24) {
                           previousValue[previousValue.indexOf(item)].add(element);
                           return previousValue;
@@ -134,9 +139,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       previousValue.add([element]);
                       return previousValue;
                     });
-                    final firstPage = listAppsPage.isNotEmpty ? listAppsPage[0] : [];
-                    final secondPage = listAppsPage.length > 1 ? listAppsPage[1] : [];
-                    final thirdPage = listAppsPage.length > 2 ? listAppsPage[2] : [];
+                    final firstPage = listAppsPage.isNotEmpty ? listAppsPage[0] : [] as List<ApplicationWithIcon>;
+                    final secondPage = listAppsPage.length > 1 ? listAppsPage[1] : [] as List<ApplicationWithIcon>;
+                    final thirdPage = listAppsPage.length > 2 ? listAppsPage[2] : [] as List<ApplicationWithIcon>;
                     final fourthPage = state;
 
                     //retorne a lista de aplicativos em grid com imagem em cima e nome em baixo 4x5 usando tabbar
@@ -176,13 +181,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       ),
                                       Text(
                                         firstPage[index].appName,
-                                        style: const TextStyle(color: Colors.white, fontSize: 10, overflow: TextOverflow.ellipsis, shadows: [
-                                          Shadow(
-                                            color: Colors.black,
-                                            offset: Offset(1, 1),
-                                            blurRadius: 5,
-                                          ),
-                                        ]),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          overflow: TextOverflow.ellipsis,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.black,
+                                              offset: Offset(1, 1),
+                                              blurRadius: 5,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -220,13 +230,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       ),
                                       Text(
                                         secondPage[index].appName,
-                                        style: const TextStyle(color: Colors.white, fontSize: 10, overflow: TextOverflow.ellipsis, shadows: [
-                                          Shadow(
-                                            color: Colors.black,
-                                            offset: Offset(1, 1),
-                                            blurRadius: 5,
-                                          ),
-                                        ]),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          overflow: TextOverflow.ellipsis,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.black,
+                                              offset: Offset(1, 1),
+                                              blurRadius: 5,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -264,13 +279,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       ),
                                       Text(
                                         thirdPage[index].appName,
-                                        style: const TextStyle(color: Colors.white, fontSize: 10, overflow: TextOverflow.ellipsis, shadows: [
-                                          Shadow(
-                                            color: Colors.black,
-                                            offset: Offset(1, 1),
-                                            blurRadius: 5,
-                                          ),
-                                        ]),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          overflow: TextOverflow.ellipsis,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.black,
+                                              offset: Offset(1, 1),
+                                              blurRadius: 5,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -308,20 +328,25 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                                       ),
                                       Text(
                                         fourthPage[index].appName,
-                                        style: const TextStyle(color: Colors.white, fontSize: 10, overflow: TextOverflow.ellipsis, shadows: [
-                                          Shadow(
-                                            color: Colors.black,
-                                            offset: Offset(1, 1),
-                                            blurRadius: 5,
-                                          ),
-                                        ]),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          overflow: TextOverflow.ellipsis,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.black,
+                                              offset: Offset(1, 1),
+                                              blurRadius: 5,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
                               );
                             },
-                          )
+                          ),
                         ],
                       );
                     }
@@ -353,13 +378,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               ),
                               Text(
                                 state[index].appName,
-                                style: const TextStyle(color: Colors.white, fontSize: 10, overflow: TextOverflow.ellipsis, shadows: [
-                                  Shadow(
-                                    color: Colors.black,
-                                    offset: Offset(1, 1),
-                                    blurRadius: 5,
-                                  ),
-                                ]),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  overflow: TextOverflow.ellipsis,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black,
+                                      offset: Offset(1, 1),
+                                      blurRadius: 5,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -385,7 +415,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         Text(
                           'Buscar',
                           style: TextStyle(color: Colors.white, fontSize: 11),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -483,7 +513,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     return Container();
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -491,3 +521,4 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 }
+*/
