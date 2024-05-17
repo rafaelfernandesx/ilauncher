@@ -1,4 +1,4 @@
-package com.example.rlauncher
+package com.rfl.ioslauncher
 
 import io.flutter.embedding.android.FlutterActivity
 import android.os.Bundle
