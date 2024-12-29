@@ -1,5 +1,6 @@
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
+import 'package:installed_apps/app_info.dart';
+import 'package:installed_apps/installed_apps.dart';
 
 class AppMenuLabel extends StatelessWidget {
   const AppMenuLabel({
@@ -7,16 +8,16 @@ class AppMenuLabel extends StatelessWidget {
     required this.app,
   });
 
-  final ApplicationWithIcon app;
+  final AppInfo app;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        DeviceApps.openApp(app.packageName);
+        InstalledApps.startApp(app.packageName);
       },
       onLongPress: () {
-        DeviceApps.openAppSettings(app.packageName);
+        InstalledApps.openSettings(app.packageName);
       },
       child: Container(
         width: 75,
@@ -31,7 +32,7 @@ class AppMenuLabel extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.memory(
-                  app.icon,
+                  app.icon!,
                   width: 55,
                   height: 55,
                 ),
@@ -49,7 +50,7 @@ class AppMenuLabel extends StatelessWidget {
                 ],
               ),
               child: Text(
-                app.appName,
+                app.name,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 11,

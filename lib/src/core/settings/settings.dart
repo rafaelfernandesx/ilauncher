@@ -22,8 +22,13 @@ class Settings {
     return _wallpaperPath ?? _defaultWallPaper;
   }
 
-  static Future<bool> setWallpaper(String path, WallpaperLocation wallpaperLocation) async {
-    final result = await WallpaperHandler.instance.setWallpaperFromAsset(path, wallpaperLocation);
+  static Future<bool> setWallpaper(
+    String path,
+    WallpaperLocation wallpaperLocation,
+  ) async {
+    // final result = await WallpaperHandler.instance.setWallpaperFromAsset(path, wallpaperLocation);
+    final result = await WallpaperHandler.instance
+        .setWallpaperFromFile(path, wallpaperLocation);
     if (result) {
       return _setWallpaperPath(path);
     }

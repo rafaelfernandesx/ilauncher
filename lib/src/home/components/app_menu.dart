@@ -1,5 +1,6 @@
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:installed_apps/app_info.dart';
+import 'package:installed_apps/installed_apps.dart';
 
 class AppMenu extends StatelessWidget {
   const AppMenu({
@@ -7,16 +8,16 @@ class AppMenu extends StatelessWidget {
     required this.app,
   });
 
-  final ApplicationWithIcon app;
+  final AppInfo app;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        DeviceApps.openApp(app.packageName);
+        InstalledApps.startApp(app.packageName);
       },
       onLongPress: () {
-        DeviceApps.openAppSettings(app.packageName);
+        InstalledApps.openSettings(app.packageName);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -26,7 +27,7 @@ class AppMenu extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Image.memory(
-            app.icon,
+            app.icon!,
             width: 55,
             height: 55,
           ),
